@@ -16,3 +16,4 @@
 config.yml
 node_modules
 notes
+.DS_Store

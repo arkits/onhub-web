@@ -52,7 +52,12 @@ func main() {
 	// Expose Version Endpoint
 	r.GET(fmt.Sprintf("/%s/api", serviceName), handlers.VersionHandler)
 
+	// Devices Endpoints
 	r.GET(fmt.Sprintf("/%s/api/devices", serviceName), handlers.GetAllDevicesHandler)
+
+	// Network Metrics Endpoints
+	r.GET(fmt.Sprintf("/%s/api/network-metrics", serviceName), handlers.GetNetworkMetricsHandler)
+	r.POST(fmt.Sprintf("/%s/api/network-metrics/start-polling", serviceName), handlers.KickOffNetworkMetricsPolling)
 
 	// Expose Metrics Endpoint
 	r.GET(fmt.Sprintf("/%s/api/metrics", serviceName), handlers.MetricsHandler)
