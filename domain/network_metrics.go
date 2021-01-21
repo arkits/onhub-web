@@ -11,34 +11,30 @@ import (
 	"github.com/arkits/onhub-web/db"
 	"github.com/arkits/onhub-web/models"
 	"github.com/arkits/onhub-web/oauth"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
 
-type InMemoryMetricsStore struct {
-	mu          sync.Mutex
-	IsPolling   bool
-	MetricsData map[string]models.GetRealTimeMetricsResponse
+type NetworkMetricsProperties struct {
+	mu        sync.Mutex
+	IsPolling bool
 }
 
-var MetricsStore InMemoryMetricsStore
+var networkMetricsProps NetworkMetricsProperties
 
 func init() {
 
-	// Initialize the MetricsStore
-
-	initialMetricsData := make(map[string]models.GetRealTimeMetricsResponse)
-
-	MetricsStore.mu.Lock()
-	MetricsStore.IsPolling = false
-	MetricsStore.MetricsData = initialMetricsData
-	MetricsStore.mu.Unlock()
+	// Initialize the networkMetricsProps
+	networkMetricsProps.mu.Lock()
+	networkMetricsProps.IsPolling = false
+	networkMetricsProps.mu.Unlock()
 
 }
 
 // BeginPollingNetworkMetrics begin the Polling for Network Metrics
 func BeginPollingNetworkMetrics() {
-	if MetricsStore.IsPolling {
-		logger.Info("MetricsStore is already polling")
+	if networkMetricsProps.IsPolling {
+		logger.Info("networkMetricsProps is already polling")
 	} else {
 		go pollForNetworkMetrics()
 	}
@@ -46,9 +42,9 @@ func BeginPollingNetworkMetrics() {
 
 func pollForNetworkMetrics() {
 
-	MetricsStore.mu.Lock()
-	MetricsStore.IsPolling = true
-	MetricsStore.mu.Unlock()
+	networkMetricsProps.mu.Lock()
+	networkMetricsProps.IsPolling = true
+	networkMetricsProps.mu.Unlock()
 
 	logger.Info("Starting to poll for NetworkMetrics...")
 
@@ -72,10 +68,22 @@ func pollForNetworkMetrics() {
 
 }
 
-// GetStoredNetworkMetrics - Temp
-func GetStoredNetworkMetrics() map[string]models.GetRealTimeMetricsResponse {
+// GetLastStoredNetworkMetrics returns the last stored Network Metric
+func GetLastStoredNetworkMetrics() (gin.H, error) {
 
-	return MetricsStore.MetricsData
+	var latestSNM models.StoredNetworkMetric
+	db.Db.Last(&latestSNM)
+
+	networkMetrics, err := db.GenerateNetworkMetricsFromSNM(latestSNM)
+	if err != nil {
+		return gin.H{}, err
+	}
+
+	return gin.H{
+		"created_at":     latestSNM.CreatedAt,
+		"id":             latestSNM.ID,
+		"network_metric": networkMetrics,
+	}, nil
 
 }
 
@@ -84,7 +92,7 @@ func GenerateNetworkMetricsStatus() models.NetworkMetricsStatus {
 
 	var networkMetricsStatus models.NetworkMetricsStatus
 
-	networkMetricsStatus.IsPooling = MetricsStore.IsPolling
+	networkMetricsStatus.IsPooling = networkMetricsProps.IsPolling
 
 	networkMetricsStatus.StoredNetworkMetricsStats = db.GenerateStoredNetworkMetricsStats()
 

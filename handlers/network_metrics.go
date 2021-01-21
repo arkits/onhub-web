@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/arkits/onhub-web/domain"
+	"github.com/arkits/onhub-web/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,7 +19,15 @@ func KickOffNetworkMetricsPolling(c *gin.Context) {
 // GetNetworkMetricsHandler return the Network Metrics based on the request params
 func GetNetworkMetricsHandler(c *gin.Context) {
 
-	metricsData := domain.GetStoredNetworkMetrics()
+	metricsData, err := domain.GetLastStoredNetworkMetrics()
+	if err != nil {
+		c.JSON(500, models.HttpErrorResponse{
+			Error:       "Fatal Error in GetLastStoredNetworkMetrics",
+			Description: err.Error(),
+		})
+		return
+	}
+
 	c.JSON(200, metricsData)
 
 }

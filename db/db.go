@@ -71,14 +71,26 @@ func GenerateStoredNetworkMetricsStats() models.StoredNetworkMetricsStats {
 	Db.Raw("SELECT COUNT(*) FROM stored_network_metrics").Scan(&snmCount)
 	storedNetworkMetricsStats.Count = snmCount
 
-	var earliestPNM models.StoredNetworkMetric
-	Db.First(&earliestPNM)
-	storedNetworkMetricsStats.Earliest = earliestPNM.CreatedAt
+	var earliestSNM models.StoredNetworkMetric
+	Db.First(&earliestSNM)
+	storedNetworkMetricsStats.Earliest = earliestSNM.CreatedAt
 
-	var latestPNM models.StoredNetworkMetric
-	Db.Last(&latestPNM)
-	storedNetworkMetricsStats.Latest = latestPNM.CreatedAt
+	var latestSNM models.StoredNetworkMetric
+	Db.Last(&latestSNM)
+	storedNetworkMetricsStats.Latest = latestSNM.CreatedAt
 
 	return storedNetworkMetricsStats
 
+}
+
+func GenerateNetworkMetricsFromSNM(snm models.StoredNetworkMetric) (models.GetRealTimeMetricsResponse, error) {
+	var networkMetrics models.GetRealTimeMetricsResponse
+
+	err := json.Unmarshal([]byte(snm.NetworkMetricJSON), &networkMetrics)
+	if err != nil {
+		logger.Errorf("Caught Error in GenerateNetworkMetricsFromSNM - %v", err)
+		return networkMetrics, err
+	}
+
+	return networkMetrics, nil
 }
