@@ -1,0 +1,12 @@
+server:
+  name: "ohw"
+  port: 4209
+  release_mode: true
+
+auth:
+  refresh_token: ""
+
+system_id: ""
+
+network_metrics:
+  poll_rate_seconds: 1

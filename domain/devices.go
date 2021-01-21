@@ -19,7 +19,6 @@ const (
 func GetAllDevices() []models.Station {
 
 	token := oauth.GetToken()
-	logger.Infof("Using token=%v", token)
 
 	systemID := viper.GetString("system_id")
 

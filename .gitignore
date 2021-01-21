@@ -19,3 +19,4 @@ notes
 .DS_Store
 *.db
 web/.eslintcache
+docker-data

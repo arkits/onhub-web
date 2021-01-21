@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.24.1
+    ports:
+      - "9090:9090"
+    command: --config.file=/etc/prometheus/prometheus.yaml
+    expose:
+      - 9090
+    volumes:
+      - ./docker/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./docker/docker-data/prometheus-data:/prometheus
+    restart: always
+    networks:
+      - ohw-net
+
+  grafana:
+    image: grafana/grafana:7.0.3-ubuntu
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/grafana.ini:/etc/grafana/grafana.ini
+      - ./docker/docker-data/grafana-data:/var/lib/grafana
+    restart: always
+    environment:
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    networks:
+      - ohw-net
+
+networks:
+  ohw-net:
+    name: ohw-net
+    driver: bridge

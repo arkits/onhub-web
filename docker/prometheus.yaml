@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 1s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: grafana
+    honor_labels: true
+    metrics_path: "/grafana/metrics"
+    static_configs:
+      - targets: ["grafana:3000"]
+
+  - job_name: ohw-service
+    honor_labels: true
+    metrics_path: "/ohw/api/metrics"
+    scheme: "http"
+    static_configs:
+      - targets: ["host.docker.internal:4209"]
