@@ -1,15 +1,21 @@
-import { indigo } from "@material-ui/core/colors";
+import { cyan, orange } from "@material-ui/core/colors";
 import { createMuiTheme } from "@material-ui/core/styles";
 
 const theme = createMuiTheme({
   palette: {
     type: "dark",
     primary: {
-      main: indigo[500],
+      main: cyan[500],
     },
     secondary: {
-      main: "#f44336",
+      main: orange[500],
     },
+    background: {
+      default: "#212121",
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
 });
 

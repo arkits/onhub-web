@@ -1,42 +1,40 @@
-import { useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import axios from "axios";
+import NavBar from "./components/NavBar";
+import Dashboard from "./pages/Dashboard";
+import InitialDataLoader from "./components/InitialDataLoader";
 
-function DeviceCards({ devices }) {
-  let elements = [];
-
-  devices.forEach((element) => {
-    elements.push(<h4 key={element.id}>{element.friendlyName}</h4>);
-  });
-
-  return elements;
-}
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    height: "100%",
+  },
+  content: {
+    flex: "1",
+    height: "100vh",
+    display: "flex",
+    paddingTop: theme.spacing(8),
+  },
+  mainContent: {
+    height: "100%",
+    width: "100%",
+  },
+}));
 
 function App() {
-  const [devices, setDevices] = useState([]);
-
-  useEffect(() => {
-    // Update the document title using the browser API
-    axios({
-      method: "get",
-      url: "http://localhost:4209/ohw/api/devices",
-      headers: {},
-    })
-      .then(function (response) {
-        setDevices(response?.data);
-      })
-      .catch(function (err) {
-        console.error(err);
-      });
-  }, []);
+  const classes = useStyles();
 
   return (
     <div className="App">
-      <Container maxWidth="md">
-        <h1>OnHub-Web</h1>
-        <h2>Number of Connected Devices - {devices.length}</h2>
-        <DeviceCards devices={devices} />
-      </Container>
+      <NavBar />
+      <main className={classes.content}>
+        <div className={classes.mainContent}>
+          <Container maxWidth="md">
+            <InitialDataLoader />
+            <Dashboard />
+          </Container>
+        </div>
+      </main>
     </div>
   );
 }
