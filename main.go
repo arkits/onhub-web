@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/arkits/onhub-web/db"
 	"github.com/arkits/onhub-web/domain"
 	"github.com/arkits/onhub-web/handlers"
 	"github.com/gin-contrib/cors"
@@ -24,6 +25,9 @@ func init() {
 
 	// Setup Logger
 	domain.SetupLogger()
+
+	// Setup the DB
+	db.InitDatabase()
 
 	// Set Gin's Release Mode
 	SetGinReleaseMode()

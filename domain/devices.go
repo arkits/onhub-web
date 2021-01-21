@@ -44,32 +44,3 @@ func GetAllDevices() []models.Station {
 
 	return getStationsResponse.Stations
 }
-
-// GetNetworkMetrics returns all devices that are, or used to be connected to the network.
-func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
-
-	token := oauth.GetToken()
-
-	systemID := viper.GetString("system_id")
-
-	requestURL := FOYER_BASE_URL + "/groups/" + systemID + "/realtimeMetrics?prettyPrint=false"
-
-	request, err := http.NewRequest("GET", requestURL, nil)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	request.Header.Add("Content-Type", "application/json; charset=utf-8")
-	request.Header.Add("Authorization", "Bearer "+token)
-
-	response, err := httpClient.Do(request)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	defer response.Body.Close()
-
-	var getRealTimeMetricsResponse models.GetRealTimeMetricsResponse
-	json.NewDecoder(response.Body).Decode(&getRealTimeMetricsResponse)
-
-	return getRealTimeMetricsResponse
-}

@@ -1,12 +1,16 @@
 package domain
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"sync"
 	"time"
 
 	"github.com/VictoriaMetrics/metrics"
+	"github.com/arkits/onhub-web/db"
 	"github.com/arkits/onhub-web/models"
+	"github.com/arkits/onhub-web/oauth"
 	"github.com/spf13/viper"
 )
 
@@ -54,10 +58,12 @@ func pollForNetworkMetrics() {
 
 		networkMetrics := GetNetworkMetrics()
 
-		MetricsStore.mu.Lock()
 		metricsDataKey := fmt.Sprintf("%v", timeStart.Unix())
-		MetricsStore.MetricsData[metricsDataKey] = networkMetrics
-		MetricsStore.mu.Unlock()
+
+		err := db.PersistNetworkMetrics(networkMetrics, metricsDataKey)
+		if err != nil {
+			logger.Errorf("Failed to persist networkMetrics - %v", err)
+		}
 
 		metrics.GetOrCreateSummary("network_metrics_poll_duration").UpdateDuration(timeStart)
 
@@ -80,11 +86,37 @@ func GenerateNetworkMetricsStatus() models.NetworkMetricsStatus {
 
 	networkMetricsStatus.IsPooling = MetricsStore.IsPolling
 
-	networkMetricsStatus.StoredNetworkMetricsStats.Count = 0
-
-	networkMetricsStatus.StoredNetworkMetricsStats.Earliest = time.Now()
-	networkMetricsStatus.StoredNetworkMetricsStats.Latest = time.Now()
+	networkMetricsStatus.StoredNetworkMetricsStats = db.GenerateStoredNetworkMetricsStats()
 
 	return networkMetricsStatus
 
+}
+
+// GetNetworkMetrics returns all devices that are, or used to be connected to the network.
+func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
+
+	token := oauth.GetToken()
+
+	systemID := viper.GetString("system_id")
+
+	requestURL := FOYER_BASE_URL + "/groups/" + systemID + "/realtimeMetrics?prettyPrint=false"
+
+	request, err := http.NewRequest("GET", requestURL, nil)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	request.Header.Add("Content-Type", "application/json; charset=utf-8")
+	request.Header.Add("Authorization", "Bearer "+token)
+
+	response, err := httpClient.Do(request)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	defer response.Body.Close()
+
+	var getRealTimeMetricsResponse models.GetRealTimeMetricsResponse
+	json.NewDecoder(response.Body).Decode(&getRealTimeMetricsResponse)
+
+	return getRealTimeMetricsResponse
 }
