@@ -10,10 +10,10 @@ onhub-web (ohw) is the missing web client for Google OnHub and Google Wifi devic
 
 ```bash
 # Download the Node.js dependencies
-~/Dev/onhub-web ❯ yarn
+~/Dev/onhub-web/web ❯ yarn
 
 # Build the frontend client
-~/Dev/onhub-web ❯ yarn build
+~/Dev/onhub-web/web ❯ yarn build
 
 # Download Go dependencies
 ~/Dev/onhub-web ❯ go mod download
