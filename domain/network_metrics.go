@@ -10,40 +10,41 @@ import (
 	"github.com/spf13/viper"
 )
 
-type MetricsStore struct {
+type InMemoryMetricsStore struct {
 	mu          sync.Mutex
 	IsPolling   bool
 	MetricsData map[string]models.GetRealTimeMetricsResponse
 }
 
-var metricsStore MetricsStore
+var MetricsStore InMemoryMetricsStore
 
 func init() {
 
-	// Initialize the metricsStore
+	// Initialize the MetricsStore
 
 	initialMetricsData := make(map[string]models.GetRealTimeMetricsResponse)
 
-	metricsStore.mu.Lock()
-	metricsStore.IsPolling = false
-	metricsStore.MetricsData = initialMetricsData
-	metricsStore.mu.Unlock()
+	MetricsStore.mu.Lock()
+	MetricsStore.IsPolling = false
+	MetricsStore.MetricsData = initialMetricsData
+	MetricsStore.mu.Unlock()
 
 }
 
+// BeginPollingNetworkMetrics begin the Polling for Network Metrics
 func BeginPollingNetworkMetrics() {
-	if metricsStore.IsPolling {
-		logger.Info("metricsStore is already polling")
+	if MetricsStore.IsPolling {
+		logger.Info("MetricsStore is already polling")
 	} else {
-		go PollForNetworkMetrics()
+		go pollForNetworkMetrics()
 	}
 }
 
-func PollForNetworkMetrics() {
+func pollForNetworkMetrics() {
 
-	metricsStore.mu.Lock()
-	metricsStore.IsPolling = true
-	metricsStore.mu.Unlock()
+	MetricsStore.mu.Lock()
+	MetricsStore.IsPolling = true
+	MetricsStore.mu.Unlock()
 
 	logger.Info("Starting to poll for NetworkMetrics...")
 
@@ -53,10 +54,10 @@ func PollForNetworkMetrics() {
 
 		networkMetrics := GetNetworkMetrics()
 
-		metricsStore.mu.Lock()
+		MetricsStore.mu.Lock()
 		metricsDataKey := fmt.Sprintf("%v", timeStart.Unix())
-		metricsStore.MetricsData[metricsDataKey] = networkMetrics
-		metricsStore.mu.Unlock()
+		MetricsStore.MetricsData[metricsDataKey] = networkMetrics
+		MetricsStore.mu.Unlock()
 
 		metrics.GetOrCreateSummary("network_metrics_poll_duration").UpdateDuration(timeStart)
 
@@ -65,7 +66,25 @@ func PollForNetworkMetrics() {
 
 }
 
-// GetStoredNetworkMetrics
+// GetStoredNetworkMetrics - Temp
 func GetStoredNetworkMetrics() map[string]models.GetRealTimeMetricsResponse {
-	return metricsStore.MetricsData
+
+	return MetricsStore.MetricsData
+
+}
+
+// GenerateNetworkMetricsStatus generates a models.NetworkMetricsStatus
+func GenerateNetworkMetricsStatus() models.NetworkMetricsStatus {
+
+	var networkMetricsStatus models.NetworkMetricsStatus
+
+	networkMetricsStatus.IsPooling = MetricsStore.IsPolling
+
+	networkMetricsStatus.StoredNetworkMetricsStats.Count = 0
+
+	networkMetricsStatus.StoredNetworkMetricsStats.Earliest = time.Now()
+	networkMetricsStatus.StoredNetworkMetricsStats.Latest = time.Now()
+
+	return networkMetricsStatus
+
 }

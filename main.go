@@ -57,6 +57,7 @@ func main() {
 
 	// Network Metrics Endpoints
 	r.GET(fmt.Sprintf("/%s/api/network-metrics", serviceName), handlers.GetNetworkMetricsHandler)
+	r.GET(fmt.Sprintf("/%s/api/network-metrics/status", serviceName), handlers.GetNetworkMetricsStatusHandler)
 	r.POST(fmt.Sprintf("/%s/api/network-metrics/start-polling", serviceName), handlers.KickOffNetworkMetricsPolling)
 
 	// Expose Metrics Endpoint

@@ -47,7 +47,7 @@ func GetToken() string {
 
 		logger.Debug("Persisted new API Token")
 	} else {
-		logger.Debug("Using Cached API Token")
+		// logger.Debug("Using Cached API Token")
 	}
 
 	// Token may have been updated... Get the new one
