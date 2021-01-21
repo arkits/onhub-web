@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -62,6 +63,12 @@ func pollForNetworkMetrics() {
 		}
 
 		metrics.GetOrCreateSummary("network_metrics_poll_duration").UpdateDuration(timeStart)
+
+		tx, _ := strconv.ParseFloat(networkMetrics.GroupTraffic.TransmitSpeedBps, 64)
+		metrics.GetOrCreateSummary("network_metrics_tx").Update(tx)
+
+		rx, _ := strconv.ParseFloat(networkMetrics.GroupTraffic.ReceiveSpeedBps, 64)
+		metrics.GetOrCreateSummary("network_metrics_rx").Update(rx)
 
 		time.Sleep(viper.GetDuration("network_metrics.poll_rate") * time.Millisecond)
 	}
