@@ -24,7 +24,7 @@ function DeviceCard({ device }) {
     <div style={{ paddingBottom: "10px" }}>
       <Card>
         <CardContent>
-          <Grid container spacing="3">
+          <Grid container spacing={3}>
             <Grid item xs={2}>
               <center>
                 {renderConnectionIcon(device?.connectionType)}
@@ -52,8 +52,18 @@ function DeviceCard({ device }) {
 function DeviceCards({ devices }) {
   let elements = [];
 
+  const isDeviceConnected = (device) => {
+    if (device?.ipAddresses !== null) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   devices.forEach((device, index) => {
-    elements.push(<DeviceCard key={index} device={device} />);
+    if (isDeviceConnected(device)) {
+      elements.push(<DeviceCard key={index} device={device} />);
+    }
   });
 
   return elements;
