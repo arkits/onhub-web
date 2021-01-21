@@ -8,13 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var ignoredHTTPEndpoints []string = []string{"/ohw/api/metrics"}
+
 // MetricsMiddleware generates Prometheus metrics data about the request
 func MetricsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		timeStart := time.Now()
 
-		logger.Debugf("Started %v - %v", c.Request.URL.Path, c.Request.Method)
+		_, requestToIgnoredEndpoint := Find(ignoredHTTPEndpoints, c.Request.URL.Path)
+
+		if !requestToIgnoredEndpoint {
+			logger.Debugf("Started %v - %v", c.Request.URL.Path, c.Request.Method)
+		}
 
 		c.Next()
 
@@ -25,6 +31,10 @@ func MetricsMiddleware() gin.HandlerFunc {
 		metrics.GetOrCreateSummary(requestDuration).UpdateDuration(timeStart)
 
 		timeTaken := time.Now().Sub(timeStart).Milliseconds()
-		logger.Debugf("Finshed %v - %v - timeTaken=%vms", c.Request.URL.Path, c.Request.Method, timeTaken)
+
+		if !requestToIgnoredEndpoint {
+			logger.Debugf("Finshed %v - %v - timeTaken=%vms", c.Request.URL.Path, c.Request.Method, timeTaken)
+		}
+
 	}
 }
