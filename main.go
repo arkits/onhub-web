@@ -9,8 +9,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/op/go-logging"
 	"github.com/spf13/viper"
+	"github.com/tsingson/packr/ginpackr"
 )
 
 var (
@@ -50,6 +52,8 @@ func main() {
 	r.Use(cors.Default())
 
 	// Expose the Frontend
+	box := packr.New("web-assets", "./web/build")
+	r.Use(ginpackr.PackrServe("/", box))
 	r.Use(static.Serve("/", static.LocalFile("./web/build", false)))
 	r.Use(static.Serve(fmt.Sprintf("/%s", serviceName), static.LocalFile("./web/build", false)))
 
