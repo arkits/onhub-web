@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { DataGrid } from "@material-ui/data-grid";
 import { observer } from "mobx-react";
 import { AppStoreContext } from "../store/AppStore";
+import { Paper } from "@material-ui/core";
 
 const columns = [
   { field: "id", headerName: "ID", width: 80 },
@@ -38,18 +39,23 @@ const DevicesDataGrid = observer(({}) => {
     }
 
     return (
-      <div style={{ height: 800, width: "100%" }}>
-        <DataGrid
-          sortModel={[
-            {
-              field: "download",
-              sort: "desc",
-            },
-          ]}
-          rows={rows}
-          columns={columns}
-        />
-      </div>
+      <>
+        <Paper>
+          <div style={{ height: 800, width: "100%" }}>
+            <DataGrid
+              sortModel={[
+                {
+                  field: "download",
+                  sort: "desc",
+                },
+              ]}
+              rows={rows}
+              columns={columns}
+            />
+          </div>
+        </Paper>
+        <br /> <br />
+      </>
     );
   } else {
     return null;
