@@ -74,6 +74,10 @@ const NetworkMetricsStatusDialog = observer(({}) => {
     getNetworkMetricsStatus()
       .then(function (response) {
         appStore.networkMetrics.status = response?.data;
+
+        if (!appStore?.networkMetrics?.status?.is_polling) {
+          beginNetworkMetricsCollection();
+        }
       })
       .catch(function (err) {
         console.error(err);

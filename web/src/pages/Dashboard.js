@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { observer } from "mobx-react";
 import { AppStoreContext } from "../store/AppStore";
 import StatusBanner from "../components/StatusBanner";
-import DeviceCards from "../components/DeviceCards";
+import DevicesDataGrid from "../components/DevicesDataGrid";
 import MetricsChart from "../components/MetricsChart";
 
 const Dashboard = observer(({}) => {
@@ -13,7 +13,7 @@ const Dashboard = observer(({}) => {
       <>
         <StatusBanner />
         <MetricsChart />
-        <DeviceCards />
+        <DevicesDataGrid />
       </>
     );
   } else {
