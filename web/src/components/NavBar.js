@@ -1,5 +1,6 @@
-import { AppBar, Toolbar, Typography } from "@material-ui/core/";
+import { AppBar, Toolbar, Typography, Button } from "@material-ui/core/";
 import { makeStyles } from "@material-ui/core/styles";
+import NetworkMetricsStatusDialog from "./NetworkMetricsStatusDialog";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -26,6 +27,7 @@ function NavBar() {
           <Typography className={classes.titleText} variant="h5" noWrap>
             ./onhub-web
           </Typography>
+          <NetworkMetricsStatusDialog />
         </Toolbar>
       </AppBar>
     </div>

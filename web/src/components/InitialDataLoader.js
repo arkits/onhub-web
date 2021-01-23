@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import Typography from "@material-ui/core/Typography";
-import LinearProgress from "@material-ui/core/LinearProgress";
+import { Typography, LinearProgress } from "@material-ui/core";
 import { observer } from "mobx-react";
 import { AppStoreContext } from "../store/AppStore";
+import { getDevices } from "../api/DevicesApi";
 
 const InitialDataLoader = observer(({}) => {
   const appStore = useContext(AppStoreContext);
@@ -12,10 +11,9 @@ const InitialDataLoader = observer(({}) => {
 
   useEffect(() => {
     setIsLoading(true);
-    axios({
-      method: "GET",
-      url: "http://localhost:4209/ohw/api/devices",
-    })
+
+    // Get Initial Devices
+    getDevices()
       .then(function (response) {
         appStore.devices = response?.data;
         appStore.isInitialLoadComplete = true;
