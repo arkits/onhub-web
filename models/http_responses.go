@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // GetStationsResponse is the object returned when retriving Stations from the OnHub API
 type GetStationsResponse struct {
 	Stations []Station `json:"stations,omitempty"`
@@ -19,4 +21,9 @@ type HttpResponse struct {
 type HttpErrorResponse struct {
 	Error       string `json:"error_message"`
 	Description string `json:"error_description,omitempty"`
+}
+
+type ChartNetworkMetrics struct {
+	Timestamp      time.Time                  `json:"timestamp"`
+	NetworkMetrics GetRealTimeMetricsResponse `json:"network_metrics"`
 }

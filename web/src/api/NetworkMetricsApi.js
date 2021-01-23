@@ -15,4 +15,15 @@ function startPollingForNetworkMetrics() {
   });
 }
 
-export { getNetworkMetricsStatus, startPollingForNetworkMetrics };
+function getNetworkMetrics() {
+  return axios({
+    method: "GET",
+    url: API_BASE + "/network-metrics",
+  });
+}
+
+export {
+  getNetworkMetricsStatus,
+  startPollingForNetworkMetrics,
+  getNetworkMetrics,
+};

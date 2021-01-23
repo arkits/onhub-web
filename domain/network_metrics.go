@@ -12,7 +12,6 @@ import (
 	"github.com/arkits/onhub-web/db"
 	"github.com/arkits/onhub-web/models"
 	"github.com/arkits/onhub-web/oauth"
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
 
@@ -75,22 +74,30 @@ func pollForNetworkMetrics() {
 
 }
 
-// GetLastStoredNetworkMetrics returns the last stored Network Metric
-func GetLastStoredNetworkMetrics() (gin.H, error) {
+// GetStoredNetworkMetrics returns stored Network Metrics based on the params
+func GetStoredNetworkMetrics() ([]models.ChartNetworkMetrics, error) {
 
-	var latestSNM models.StoredNetworkMetric
-	db.Db.Last(&latestSNM)
+	var storedNetworkMetrics []models.StoredNetworkMetric
+	db.Db.Order("created_at desc").Limit(20).Find(&storedNetworkMetrics)
 
-	networkMetrics, err := db.GenerateNetworkMetricsFromSNM(latestSNM)
-	if err != nil {
-		return gin.H{}, err
+	var toReturn []models.ChartNetworkMetrics
+
+	for _, storedNetworkMetric := range storedNetworkMetrics {
+
+		var chartNetworkMetrics models.ChartNetworkMetrics
+
+		networkMetric, err := db.GenerateNetworkMetricsFromSNM(storedNetworkMetric)
+		if err != nil {
+			return toReturn, err
+		}
+
+		chartNetworkMetrics.Timestamp = storedNetworkMetric.CreatedAt
+		chartNetworkMetrics.NetworkMetrics = networkMetric
+
+		toReturn = append(toReturn, chartNetworkMetrics)
 	}
 
-	return gin.H{
-		"created_at":     latestSNM.CreatedAt,
-		"id":             latestSNM.ID,
-		"network_metric": networkMetrics,
-	}, nil
+	return toReturn, nil
 
 }
 

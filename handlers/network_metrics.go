@@ -19,7 +19,7 @@ func KickOffNetworkMetricsPolling(c *gin.Context) {
 // GetNetworkMetricsHandler return the Network Metrics based on the request params
 func GetNetworkMetricsHandler(c *gin.Context) {
 
-	metricsData, err := domain.GetLastStoredNetworkMetrics()
+	metricsData, err := domain.GetStoredNetworkMetrics()
 	if err != nil {
 		c.JSON(500, models.HttpErrorResponse{
 			Error:       "Fatal Error in GetLastStoredNetworkMetrics",
