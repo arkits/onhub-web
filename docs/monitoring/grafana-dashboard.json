@@ -14,7 +14,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.0.3"
+      "version": "7.3.7"
     },
     {
       "type": "panel",
@@ -56,15 +56,16 @@
       "datasource": "${DS_PROMETHEUS}",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 14,
-        "w": 16,
+        "h": 12,
+        "w": 14,
         "x": 0,
         "y": 0
       },
@@ -83,9 +84,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -158,16 +160,113 @@
       "datasource": "${DS_PROMETHEUS}",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
+        "h": 8,
+        "w": 5,
+        "x": 14,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "go_goroutines{job=\"ohw-service\"}",
+          "interval": "",
+          "legendFormat": "count",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "goroutines",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 19,
         "y": 0
       },
       "hiddenSeries": false,
@@ -185,9 +284,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -258,25 +358,28 @@
       "datasource": "${DS_PROMETHEUS}",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
-        "y": 7
+        "h": 16,
+        "w": 10,
+        "x": 14,
+        "y": 8
       },
       "hiddenSeries": false,
-      "id": 4,
+      "id": 2,
       "legend": {
+        "alignAsTable": true,
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
+        "rightSide": false,
         "show": true,
         "total": false,
         "values": false
@@ -285,9 +388,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -297,9 +401,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "go_goroutines{job=\"ohw-service\"}",
+          "expr": "sum(rate(http_requests_duration_seconds{job=\"ohw-service\"}[1m])) by (instance, path, method, status)",
           "interval": "",
-          "legendFormat": "count",
+          "legendFormat": "{{method}} - {{status}} - {{path}} ",
           "refId": "A"
         }
       ],
@@ -307,9 +411,9 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "goroutines",
+      "title": "Incoming HTTP Request Rate",
       "tooltip": {
-        "shared": true,
+        "shared": false,
         "sort": 0,
         "value_type": "individual"
       },
@@ -323,7 +427,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "s",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -352,17 +456,124 @@
       "datasource": "${DS_PROMETHEUS}",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "links": []
         },
         "overrides": []
       },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 9,
-        "w": 12,
+        "h": 12,
+        "w": 10,
         "x": 0,
-        "y": 14
+        "y": 12
+      },
+      "hiddenSeries": false,
+      "id": 11,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.3.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(rate(station_network_metrics_rx{job=\"ohw-service\"}[1m])) by (friendly_name)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Download - {{friendly_name}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(station_network_metrics_tx{job=\"ohw-service\"}[1m])) by (friendly_name)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Upload - {{friendly_name}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Network rx/tx",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 10,
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 8,
@@ -379,9 +590,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.3.7",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -437,115 +649,22 @@
         "align": false,
         "alignLevel": null
       }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 14
-      },
-      "hiddenSeries": false,
-      "id": 2,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum(rate(http_requests_duration_seconds{job=\"ohw-service\"}[1m])) by (instance, path, method)",
-          "interval": "",
-          "legendFormat": "{{method}} - {{path}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Incoming HTTP Request Rate",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "s",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 25,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
+      "5s",
       "10s",
       "30s",
       "1m",
@@ -560,5 +679,5 @@
   "timezone": "",
   "title": "OnHub Web",
   "uid": "CWKp-BBGk",
-  "version": 7
+  "version": 9
 }
