@@ -1,11 +1,7 @@
 set -e
 
-echo "==> Building Web"
-cd ../web
-yarn build
-cd -
+./build_web.sh
 
-echo "==> Building Go Binary"
-cd ..
-go mod download
-packr2 build .
+./build_bin.sh
+
+exit
