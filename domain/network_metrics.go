@@ -61,13 +61,7 @@ func pollForNetworkMetrics() {
 			logger.Errorf("Failed to persist networkMetrics - %v", err)
 		}
 
-		metrics.GetOrCreateSummary("network_metrics_poll_duration").UpdateDuration(timeStart)
-
-		tx, _ := strconv.ParseFloat(networkMetrics.GroupTraffic.TransmitSpeedBps, 64)
-		metrics.GetOrCreateSummary("network_metrics_tx").Update(tx)
-
-		rx, _ := strconv.ParseFloat(networkMetrics.GroupTraffic.ReceiveSpeedBps, 64)
-		metrics.GetOrCreateSummary("network_metrics_rx").Update(rx)
+		go exportNetworkMetricsToPrometheus(networkMetrics, timeStart)
 
 		time.Sleep(viper.GetDuration("network_metrics.poll_rate") * time.Millisecond)
 	}
@@ -141,4 +135,33 @@ func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
 	json.NewDecoder(response.Body).Decode(&getRealTimeMetricsResponse)
 
 	return getRealTimeMetricsResponse
+}
+
+func exportNetworkMetricsToPrometheus(networkMetrics models.GetRealTimeMetricsResponse, timeStart time.Time) {
+
+	metrics.GetOrCreateSummary("network_metrics_poll_duration").UpdateDuration(timeStart)
+
+	tx, _ := strconv.ParseFloat(networkMetrics.GroupTraffic.TransmitSpeedBps, 64)
+	metrics.GetOrCreateSummary("network_metrics_tx").Update(tx)
+
+	rx, _ := strconv.ParseFloat(networkMetrics.GroupTraffic.ReceiveSpeedBps, 64)
+	metrics.GetOrCreateSummary("network_metrics_rx").Update(rx)
+
+	for _, stationMetrics := range networkMetrics.StationMetrics {
+
+		// Station Rx Metrics
+		txMetricName := fmt.Sprintf(`station_network_metrics_tx{friendly_name="%v"}`,
+			stationMetrics.Station.FriendlyName,
+		)
+		tx, _ := strconv.ParseFloat(stationMetrics.Traffic.TransmitSpeedBps, 64)
+		metrics.GetOrCreateSummary(txMetricName).Update(tx)
+
+		// Station Tx Metrics
+		rxMetricName := fmt.Sprintf(`station_network_metrics_rx{friendly_name="%v"}`,
+			stationMetrics.Station.FriendlyName,
+		)
+		rx, _ := strconv.ParseFloat(stationMetrics.Traffic.ReceiveSpeedBps, 64)
+		metrics.GetOrCreateSummary(rxMetricName).Update(rx)
+	}
+
 }

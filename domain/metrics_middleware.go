@@ -25,8 +25,8 @@ func MetricsMiddleware() gin.HandlerFunc {
 		c.Next()
 
 		// Update Prometheus metrics
-		requestDuration := fmt.Sprintf(`http_requests_duration_seconds{path="%v", method="%v"}`,
-			c.Request.URL.Path, c.Request.Method,
+		requestDuration := fmt.Sprintf(`http_requests_duration_seconds{path="%v", method="%v", status="%v"}`,
+			c.Request.URL.Path, c.Request.Method, c.Writer.Status(),
 		)
 		metrics.GetOrCreateSummary(requestDuration).UpdateDuration(timeStart)
 

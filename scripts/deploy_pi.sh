@@ -1,19 +1,8 @@
 set -e
 
-USERNAME="pi"
-HOSTNAME="192.168.86.112"
-WORK_DIR="/home/pi/software/onhub-web"
-BIN_NAME="onhub-web"
+source deploy_constants.sh
 
-echo ">>> Killing Running Process"
-ssh -q $USERNAME@$HOSTNAME <<EOF
-  PID=`ps -eaf | grep onhub-web | grep -v grep | awk '{print $2}'`
-
-  if [[ "" !=  "$PID" ]]; then
-    echo "killing $PID"
-    kill -9 $PID
-  fi
-EOF
+./kill_remote.sh
 
 cd ..
 echo ">>> SCP'ing to $USERNAME@$HOSTNAME:$WORK_DIR"
