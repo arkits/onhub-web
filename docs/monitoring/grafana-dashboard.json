@@ -27,6 +27,12 @@
       "id": "prometheus",
       "name": "Prometheus",
       "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
     }
   ],
   "annotations": {
@@ -115,7 +121,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Network rx/tx",
+      "title": "Network Up/Down",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -211,7 +217,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "goroutines",
+      "title": "Goroutines count",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -517,7 +523,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Network rx/tx",
+      "title": "Per Device Network Up/Down",
       "tooltip": {
         "shared": false,
         "sort": 0,
@@ -605,7 +611,7 @@
         {
           "expr": "sum(rate(network_metrics_poll_duration{job=\"ohw-service\"}[1m])) ",
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "duration",
           "refId": "A"
         }
       ],
@@ -613,7 +619,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "network_metrics_poll_duration",
+      "title": "Network Metrics Polling Duration",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -649,6 +655,64 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 10,
+        "y": 19
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.7",
+      "targets": [
+        {
+          "expr": "connected_stations{quantile=\"1\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Connected Stations",
+      "type": "stat"
     }
   ],
   "refresh": "5s",
@@ -679,5 +743,5 @@
   "timezone": "",
   "title": "OnHub Web",
   "uid": "CWKp-BBGk",
-  "version": 9
+  "version": 11
 }

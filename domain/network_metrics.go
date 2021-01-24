@@ -139,6 +139,8 @@ func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
 
 func exportNetworkMetricsToPrometheus(networkMetrics models.GetRealTimeMetricsResponse, timeStart time.Time) {
 
+	numberOfConnectedStations := 0.0
+
 	metrics.GetOrCreateSummary("network_metrics_poll_duration").UpdateDuration(timeStart)
 
 	tx, _ := strconv.ParseFloat(networkMetrics.GroupTraffic.TransmitSpeedBps, 64)
@@ -149,19 +151,29 @@ func exportNetworkMetricsToPrometheus(networkMetrics models.GetRealTimeMetricsRe
 
 	for _, stationMetrics := range networkMetrics.StationMetrics {
 
-		// Station Rx Metrics
-		txMetricName := fmt.Sprintf(`station_network_metrics_tx{friendly_name="%v"}`,
-			stationMetrics.Station.FriendlyName,
-		)
-		tx, _ := strconv.ParseFloat(stationMetrics.Traffic.TransmitSpeedBps, 64)
-		metrics.GetOrCreateSummary(txMetricName).Update(tx)
+		if stationMetrics.Station.Connected {
 
-		// Station Tx Metrics
-		rxMetricName := fmt.Sprintf(`station_network_metrics_rx{friendly_name="%v"}`,
-			stationMetrics.Station.FriendlyName,
-		)
-		rx, _ := strconv.ParseFloat(stationMetrics.Traffic.ReceiveSpeedBps, 64)
-		metrics.GetOrCreateSummary(rxMetricName).Update(rx)
+			// Station Rx Metrics
+			txMetricName := fmt.Sprintf(`station_network_metrics_tx{friendly_name="%v"}`,
+				stationMetrics.Station.FriendlyName,
+			)
+			tx, _ := strconv.ParseFloat(stationMetrics.Traffic.TransmitSpeedBps, 64)
+			metrics.GetOrCreateSummary(txMetricName).Update(tx)
+
+			// Station Tx Metrics
+			rxMetricName := fmt.Sprintf(`station_network_metrics_rx{friendly_name="%v"}`,
+				stationMetrics.Station.FriendlyName,
+			)
+			rx, _ := strconv.ParseFloat(stationMetrics.Traffic.ReceiveSpeedBps, 64)
+			metrics.GetOrCreateSummary(rxMetricName).Update(rx)
+
+			// Count number of connected stations
+			numberOfConnectedStations = numberOfConnectedStations + 1
+
+		}
+
 	}
+
+	metrics.GetOrCreateSummary("connected_stations").Update(numberOfConnectedStations)
 
 }
