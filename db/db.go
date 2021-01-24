@@ -2,12 +2,14 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/arkits/onhub-web/models"
 	"github.com/op/go-logging"
-	"gorm.io/driver/sqlite"
+	"github.com/spf13/viper"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 )
@@ -29,7 +31,18 @@ func InitDatabase() {
 		},
 	)
 
-	db, err := gorm.Open(sqlite.Open("ohw-data.db"), &gorm.Config{
+	// For sqlite DB
+	// db, err := gorm.Open(sqlite.Open("ohw-data.db"), &gorm.Config{
+	// 	Logger: ormLogger,
+	// })
+
+	dbHost := viper.GetString("db.host")
+	dbUsername := viper.GetString("db.username")
+	dbPassword := viper.GetString("db.password")
+	dbName := viper.GetString("db.name")
+	dbPort := viper.GetString("db.port")
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUsername, dbPassword, dbName, dbPort)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: ormLogger,
 	})
 

@@ -1,3 +1,3 @@
-const API_BASE = "http://localhost:4209/ohw/api";
+const API_BASE = "/ohw/api";
 
 export { API_BASE };

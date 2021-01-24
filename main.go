@@ -7,12 +7,10 @@ import (
 	"github.com/arkits/onhub-web/domain"
 	"github.com/arkits/onhub-web/handlers"
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/gobuffalo/packr/v2"
 	"github.com/op/go-logging"
 	"github.com/spf13/viper"
-	"github.com/tsingson/packr/ginpackr"
 )
 
 var (
@@ -53,9 +51,8 @@ func main() {
 
 	// Expose the Frontend
 	box := packr.New("web-assets", "./web/build")
-	r.Use(ginpackr.PackrServe("/", box))
-	r.Use(static.Serve("/", static.LocalFile("./web/build", false)))
-	r.Use(static.Serve(fmt.Sprintf("/%s", serviceName), static.LocalFile("./web/build", false)))
+	r.Use(domain.StaticServe("/", box))
+	r.Use(domain.StaticServe(fmt.Sprintf("/%s", serviceName), box))
 
 	// Expose Version Endpoint
 	r.GET(fmt.Sprintf("/%s/api", serviceName), handlers.VersionHandler)

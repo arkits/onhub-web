@@ -4,12 +4,12 @@
 
 set -e
 
-# ./build_web.sh
+./build_web.sh
 
 export GOOS=linux
 export GOARCH=arm
-export GOARM=7
-export CGO_ENABLED=1
+export GOARM=5
+# export CGO_ENABLED=1
 ./build_bin.sh
 
 exit
