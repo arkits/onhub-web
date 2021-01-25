@@ -3,14 +3,30 @@ import { DataGrid } from "@material-ui/data-grid";
 import { observer } from "mobx-react";
 import { AppStoreContext } from "../store/AppStore";
 import { Paper } from "@material-ui/core";
+import { formatBytes } from "../utils/utils";
 
 const columns = [
-  { field: "id", headerName: "ID", width: 80 },
-  { field: "name", headerName: "Device Name", width: 290 },
-  { field: "connectionType", headerName: "Type", width: 130 },
+  { field: "name", headerName: "Device Name", width: 280 },
+  { field: "upload", headerName: "UP", width: 130, hide: true },
+  {
+    field: "prettyUpload",
+    headerName: "UP",
+    width: 130,
+    valueGetter: (params) => formatBytes(params.getValue("upload")),
+    sortComparator: (v1, v2, param1, param2) =>
+      param1.row.upload - param2.row.upload,
+  },
+  { field: "download", headerName: "DOWN", width: 130, hide: true },
+  {
+    field: "prettyDownload",
+    headerName: "DOWN",
+    width: 130,
+    valueGetter: (params) => formatBytes(params.getValue("download")),
+    sortComparator: (v1, v2, param1, param2) =>
+      param1.row.download - param2.row.download,
+  },
+  { field: "connectionType", headerName: "CONN", width: 130 },
   { field: "ipAddress", headerName: "IP", width: 130 },
-  { field: "upload", headerName: "UP", width: 130 },
-  { field: "download", headerName: "DOWN", width: 130 },
 ];
 
 const DevicesDataGrid = observer(({}) => {
@@ -45,7 +61,7 @@ const DevicesDataGrid = observer(({}) => {
             <DataGrid
               sortModel={[
                 {
-                  field: "download",
+                  field: "prettyDownload",
                   sort: "desc",
                 },
               ]}

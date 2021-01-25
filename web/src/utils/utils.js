@@ -5,7 +5,7 @@ function formatBytes(a, b = 2) {
   return (
     parseFloat((a / Math.pow(1024, d)).toFixed(c)) +
     " " +
-    ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"][d]
+    ["Bytes/s", "KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s", "ZB/s", "YB/s"][d]
   );
 }
 
