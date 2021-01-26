@@ -17,28 +17,37 @@ const StatusBanner = observer(({}) => {
     return numberOfConnectedDevices;
   };
 
-  const renderNetworkMetrics = (networkMetrics) => {
+  const renderNetworkMetric = (networkMetrics) => {
     if (networkMetrics) {
-      return `${formatBytes(
+      let prettyUpload = formatBytes(
         networkMetrics[0]?.network_metrics?.groupTraffic?.transmitSpeedBps
-      )} upload - ${formatBytes(
+      );
+
+      let prettyDownload = formatBytes(
         networkMetrics[0]?.network_metrics?.groupTraffic?.receiveSpeedBps
-      )} download`;
+      );
+
+      return (
+        <Typography
+          variant="h5"
+          color="textSecondary"
+          style={{ fontWeight: 700 }}
+        >
+          {prettyDownload} download <br />
+          {prettyUpload} upload<br />
+        </Typography>
+      );
     } else {
       return null;
     }
   };
 
   return (
-    <div style={{ marginTop: "5%", padding: "5%" }}>
-      <center>
-        <Typography variant="h3">HashMap is online</Typography>
-        <Typography variant="h5">
-          {getNumberOfConnectedDevice(appStore.devices)} devices connected{" "}
-          <br></br>
-          {renderNetworkMetrics(appStore.networkMetrics.data)}
-        </Typography>
-      </center>
+    <div>
+      <Typography variant="h3" style={{ fontWeight: 700 }}>
+        {getNumberOfConnectedDevice(appStore?.devices)} devices connected{" "}
+      </Typography>
+      {renderNetworkMetric(appStore?.networkMetrics?.data)}
     </div>
   );
 });

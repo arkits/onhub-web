@@ -18,27 +18,10 @@ const useStyles = makeStyles((theme) => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
   },
-  buttonStyle: {
-    fontFamily: "Inter",
-    fontWeight: "bold",
-    textTransform: "none",
-  },
 }));
 
 function NavBar() {
   const classes = useStyles();
-
-  const [appVersion, setAppVersion] = useState("0.0.1");
-
-  useEffect(() => {
-    getVersion()
-      .then(function (response) {
-        setAppVersion(response?.data?.version);
-      })
-      .catch(function (err) {
-        console.error(err);
-      });
-  }, []);
 
   return (
     <div>
@@ -48,9 +31,6 @@ function NavBar() {
             ./onhub-web
           </Typography>
           <NetworkMetricsStatusDialog />
-          <Button className={classes.buttonStyle} color="white">
-            v{appVersion}
-          </Button>
         </Toolbar>
       </AppBar>
     </div>

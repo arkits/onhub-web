@@ -1,11 +1,11 @@
 import axios from "axios";
 import { API_BASE } from "./ApiConstants";
 
-function getVersion() {
+function getDebugVersion() {
   return axios({
     method: "GET",
     url: API_BASE,
   });
 }
 
-export { getVersion };
+export { getDebugVersion };

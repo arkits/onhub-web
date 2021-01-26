@@ -29,10 +29,8 @@ function App() {
       <NavBar />
       <main className={classes.content}>
         <div className={classes.mainContent}>
-          <Container maxWidth="md">
-            <InitialDataLoader />
-            <Dashboard />
-          </Container>
+          <InitialDataLoader />
+          <Dashboard />
         </div>
       </main>
     </div>

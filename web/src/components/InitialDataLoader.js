@@ -4,10 +4,14 @@ import {
   LinearProgress,
   Card,
   CardContent,
+  Container,
 } from "@material-ui/core";
 import { observer } from "mobx-react";
 import { AppStoreContext } from "../store/AppStore";
+import { getDebugVersion } from "../api/DebugApi";
 import { getDevices } from "../api/DevicesApi";
+import { getNetworkMetrics } from "../api/NetworkMetricsApi";
+import dayjs from "dayjs";
 
 function ErrorBanner({ apiError }) {
   if (apiError != null) {
@@ -38,29 +42,70 @@ const InitialDataLoader = observer(({}) => {
 
   const [apiError, setApiError] = useState(null);
 
-  useEffect(() => {
-    setIsLoading(true);
-    getDevices()
+  const updateNetworkMetrics = () => {
+    getNetworkMetrics()
       .then(function (response) {
-        appStore.devices = response?.data;
-        appStore.isInitialLoadComplete = true;
-        setIsLoading(false);
+        let newMetricsData = [];
+
+        appStore.networkMetrics.data = response?.data;
+
+        for (let metric of response?.data) {
+          let parsedMetrics = {};
+
+          parsedMetrics["timestamp"] = dayjs(metric?.timestamp).format(
+            "HH:mm:ss A"
+          );
+          parsedMetrics["upload"] = parseFloat(
+            metric?.network_metrics?.groupTraffic?.transmitSpeedBps
+          );
+          parsedMetrics["download"] = parseFloat(
+            metric?.network_metrics?.groupTraffic?.receiveSpeedBps
+          );
+
+          newMetricsData.push(parsedMetrics);
+        }
+        appStore.networkMetrics.parsedData = newMetricsData.reverse();
       })
       .catch(function (err) {
         console.error(err);
-        setIsLoading(false);
-        setApiError(err);
       });
+  };
+
+  useEffect(async () => {
+    setIsLoading(true);
+
+    try {
+      let debugVersion = await getDebugVersion();
+      appStore.appVersion = debugVersion?.data;
+
+      let devices = await getDevices();
+      appStore.devices = devices?.data;
+
+      setInterval(() => {
+        updateNetworkMetrics();
+      }, 1000);
+
+      if (isLoading) {
+        setIsLoading(false);
+        appStore.isInitialLoadComplete = true;
+      }
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+      setApiError(error);
+    }
   }, []);
 
   if (isLoading) {
     return (
-      <div style={{ marginTop: "10%" }}>
-        <center>
-          <Typography variant="h5">Loading Initial Data...</Typography> <br />
-          <LinearProgress color="secondary" />
-        </center>
-      </div>
+      <Container maxWidth="md">
+        <div style={{ marginTop: "10%" }}>
+          <center>
+            <Typography variant="h5">Loading Initial Data...</Typography> <br />
+            <LinearProgress color="secondary" />
+          </center>
+        </div>
+      </Container>
     );
   } else {
     return <ErrorBanner apiError={apiError} />;

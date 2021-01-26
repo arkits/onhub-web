@@ -56,20 +56,18 @@ const DevicesDataGrid = observer(({}) => {
 
     return (
       <>
-        <Paper>
-          <div style={{ height: 800, width: "100%" }}>
-            <DataGrid
-              sortModel={[
-                {
-                  field: "prettyDownload",
-                  sort: "desc",
-                },
-              ]}
-              rows={rows}
-              columns={columns}
-            />
-          </div>
-        </Paper>
+        <div style={{ height: 800, width: "100%" }}>
+          <DataGrid
+            sortModel={[
+              {
+                field: "prettyDownload",
+                sort: "desc",
+              },
+            ]}
+            rows={rows}
+            columns={columns}
+          />
+        </div>
         <br /> <br />
       </>
     );
