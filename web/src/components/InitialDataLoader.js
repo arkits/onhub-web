@@ -65,35 +65,35 @@ const InitialDataLoader = observer(({}) => {
           newMetricsData.push(parsedMetrics);
         }
         appStore.networkMetrics.parsedData = newMetricsData.reverse();
+
+        setIsLoading(false);
+        appStore.isInitialLoadComplete = true;
       })
       .catch(function (err) {
         console.error(err);
       });
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     setIsLoading(true);
+    async function fetchInitialData() {
+      try {
+        let debugVersion = await getDebugVersion();
+        appStore.appVersion = debugVersion?.data;
 
-    try {
-      let debugVersion = await getDebugVersion();
-      appStore.appVersion = debugVersion?.data;
+        let devices = await getDevices();
+        appStore.devices = devices?.data;
 
-      let devices = await getDevices();
-      appStore.devices = devices?.data;
-
-      setInterval(() => {
-        updateNetworkMetrics();
-      }, 1000);
-
-      if (isLoading) {
+        setInterval(() => {
+          updateNetworkMetrics();
+        }, 1000);
+      } catch (error) {
+        console.error(error);
         setIsLoading(false);
-        appStore.isInitialLoadComplete = true;
+        setApiError(error);
       }
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-      setApiError(error);
     }
+    fetchInitialData();
   }, []);
 
   if (isLoading) {
