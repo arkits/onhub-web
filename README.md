@@ -14,7 +14,7 @@ onhub-web talks to the [Google Foyer APIs](https://documenter.getpostman.com/vie
 
 To get started, create a `config.yaml` based on [sample config](./config.sample.yaml).
 
-### Building and Running Locally
+### Running Locally
 
 ```bash
 # Download the Node.js dependencies
@@ -28,6 +28,16 @@ To get started, create a `config.yaml` based on [sample config](./config.sample.
 
 # Run the server
 ~/Dev/onhub-web ❯ go run main.go
+```
+
+### Building
+
+```bash
+# Build a stand-alone binary (includes web UI)
+~/Dev/onhub-web/scripts ❯ ./make.sh
+
+# Build a stand-alone binary (includes web UI) for Raspberry Pi 4
+~/Dev/onhub-web/scripts ❯ ./make_pi.sh
 ```
 
 ### Grafana
