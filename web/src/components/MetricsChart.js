@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { observer } from "mobx-react";
 import { AppStoreContext } from "../store/AppStore";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   AreaChart,
   Area,
