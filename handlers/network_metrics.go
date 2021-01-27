@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/arkits/onhub-web/domain"
 	"github.com/arkits/onhub-web/models"
 	"github.com/gin-gonic/gin"
@@ -19,12 +21,23 @@ func KickOffNetworkMetricsPolling(c *gin.Context) {
 // GetNetworkMetricsHandler return the Network Metrics based on the request params
 func GetNetworkMetricsHandler(c *gin.Context) {
 
-	metricsData, err := domain.GetStoredNetworkMetrics()
+	limitStr := c.DefaultQuery("limit", "30")
+	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
-		c.JSON(500, models.HttpErrorResponse{
-			Error:       "Fatal Error in GetLastStoredNetworkMetrics",
-			Description: err.Error(),
-		})
+		ReturnHTTPError(c, 400, "Unable to parse limit", err.Error())
+		return
+	}
+
+	skipStr := c.DefaultQuery("skip", "0")
+	skip, err := strconv.Atoi(skipStr)
+	if err != nil {
+		ReturnHTTPError(c, 400, "Unable to parse skip", err.Error())
+		return
+	}
+
+	metricsData, err := domain.GetStoredNetworkMetrics(limit, skip)
+	if err != nil {
+		ReturnHTTPError(c, 500, "Internal Error in GetStoredNetworkMetrics", err.Error())
 		return
 	}
 

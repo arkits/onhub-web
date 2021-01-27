@@ -70,10 +70,10 @@ func pollForNetworkMetrics() {
 }
 
 // GetStoredNetworkMetrics returns stored Network Metrics based on the params
-func GetStoredNetworkMetrics() ([]models.ChartNetworkMetrics, error) {
+func GetStoredNetworkMetrics(limit int, skip int) ([]models.ChartNetworkMetrics, error) {
 
 	var storedNetworkMetrics []models.StoredNetworkMetric
-	db.Db.Order("created_at desc").Limit(20).Find(&storedNetworkMetrics)
+	db.Db.Order("created_at desc").Limit(limit).Find(&storedNetworkMetrics)
 
 	var toReturn []models.ChartNetworkMetrics
 

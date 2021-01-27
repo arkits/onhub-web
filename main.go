@@ -7,6 +7,7 @@ import (
 	"github.com/arkits/onhub-web/domain"
 	"github.com/arkits/onhub-web/handlers"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/gobuffalo/packr/v2"
 	"github.com/op/go-logging"
@@ -53,6 +54,9 @@ func main() {
 	box := packr.New("web-assets", "./web/build")
 	r.Use(domain.StaticServe("/", box))
 	r.Use(domain.StaticServe(fmt.Sprintf("/%s", serviceName), box))
+
+	// Use Gzip compression
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// Expose Version Endpoint
 	r.GET(fmt.Sprintf("/%s/api", serviceName), handlers.VersionHandler)

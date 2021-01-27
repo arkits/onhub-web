@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var ignoredHTTPEndpoints []string = []string{"/ohw/api/metrics"}
+var ignoredHTTPEndpoints []string = []string{"/ohw/api/metrics", "/ohw/api/network-metrics"}
 
 // MetricsMiddleware generates Prometheus metrics data about the request
 func MetricsMiddleware() gin.HandlerFunc {
