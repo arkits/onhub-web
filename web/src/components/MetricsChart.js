@@ -1,8 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { observer } from "mobx-react";
 import { AppStoreContext } from "../store/AppStore";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography, Card, CardContent } from "@material-ui/core";
 import {
   AreaChart,
   Area,
@@ -11,24 +10,18 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { getNetworkMetrics } from "../api/NetworkMetricsApi";
-import dayjs from "dayjs";
 import { formatBytes } from "../utils/utils";
-
-const useStyles = makeStyles({
-  root: {
-    marginBottom: 24,
-  },
-});
 
 const MetricsChart = observer(({}) => {
   const appStore = useContext(AppStoreContext);
 
-  const classes = useStyles();
-
   const networkMetricsData = appStore?.networkMetrics?.parsedData;
 
   const ToolTipFormatter = (value, name, props) => {
+    return formatBytes(value);
+  };
+
+  const YAxisTickFormatter = (value) => {
     return formatBytes(value);
   };
 
@@ -58,7 +51,7 @@ const MetricsChart = observer(({}) => {
               angle={-45}
               textAnchor="end"
             />
-            <YAxis />
+            <YAxis tickFormatter={YAxisTickFormatter} />
             <Tooltip formatter={ToolTipFormatter} />
             <Area
               type="monotone"

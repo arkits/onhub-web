@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// NetworkMetricsProperties captures the various state about the Network Metrics collection feature
 type NetworkMetricsProperties struct {
 	mu        sync.Mutex
 	IsPolling bool
