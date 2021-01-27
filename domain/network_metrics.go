@@ -119,14 +119,14 @@ func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
 
 	request, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Errorf("Caught Error in network_metrics.GetNetworkMetrics - err=%s ", err)
 	}
 	request.Header.Add("Content-Type", "application/json; charset=utf-8")
 	request.Header.Add("Authorization", "Bearer "+token)
 
 	response, err := httpClient.Do(request)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Errorf("Caught Error in network_metrics.GetNetworkMetrics - err=%s ", err)
 	}
 
 	defer response.Body.Close()
