@@ -3,13 +3,16 @@ package domain
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/arkits/onhub-web/models"
 	"github.com/arkits/onhub-web/oauth"
 	"github.com/spf13/viper"
 )
 
-var httpClient = &http.Client{}
+var httpClient = &http.Client{
+	Timeout: time.Second * 10,
+}
 
 const (
 	FOYER_BASE_URL = "https://googlehomefoyer-pa.googleapis.com/v2"

@@ -78,6 +78,7 @@ func collectAndPersistNetworkMetrics(timeStart time.Time) {
 	err = db.PersistNetworkMetrics(networkMetrics, metricsDataKey)
 	if err != nil {
 		logger.Errorf("Failed to persist networkMetrics - %v", err)
+		return
 	}
 
 	// Export to Prometheus
