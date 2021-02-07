@@ -113,7 +113,7 @@ func GetStoredNetworkMetrics(limit int, skip int) ([]models.ChartNetworkMetrics,
 		for _, stationMetric := range networkMetrics.StationMetrics {
 
 			// We only care about Connected Stations
-			if stationMetric.Station.Connected {
+			if isStationConnected(stationMetric.Station) {
 				filteredStationMetrics = append(filteredStationMetrics, stationMetric)
 			}
 
@@ -190,7 +190,8 @@ func exportNetworkMetricsToPrometheus(networkMetrics models.GetRealTimeMetricsRe
 
 	for _, stationMetrics := range networkMetrics.StationMetrics {
 
-		if stationMetrics.Station.Connected {
+		// Only export metrics for connected stations
+		if isStationConnected(stationMetrics.Station) {
 
 			// Station Rx Metrics
 			txMetricName := fmt.Sprintf(`station_network_metrics_tx{friendly_name="%v"}`,
@@ -215,4 +216,16 @@ func exportNetworkMetricsToPrometheus(networkMetrics models.GetRealTimeMetricsRe
 
 	metrics.GetOrCreateSummary("connected_stations").Update(numberOfConnectedStations)
 
+}
+
+// isStationConnected is a helper function to determine whether a Station is connected to the network
+// There are multiple indicators to reach this conclusion, however checking the length of IPAddresses
+// is the most accurate.
+func isStationConnected(station models.Station) bool {
+
+	if len(station.IPAddresses) >= 1 {
+		return true
+	}
+
+	return false
 }
