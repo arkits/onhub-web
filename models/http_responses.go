@@ -13,16 +13,19 @@ type GetRealTimeMetricsResponse struct {
 	StationMetrics []StationMetric `json:"stationMetrics,omitempty"`
 }
 
-type HttpResponse struct {
+// HTTPResponse represents a generic HTTP response
+type HTTPResponse struct {
 	Message string      `json:"message"`
 	Entity  interface{} `json:"entity,omitempty"`
 }
 
-type HttpErrorResponse struct {
+// HTTPErrorResponse represents a generic HTTP Error response
+type HTTPErrorResponse struct {
 	Error       string `json:"error_message"`
 	Description string `json:"error_description,omitempty"`
 }
 
+// ChartNetworkMetrics represent a RealTimeMetric and it's associated Time
 type ChartNetworkMetrics struct {
 	Timestamp      time.Time                  `json:"timestamp"`
 	NetworkMetrics GetRealTimeMetricsResponse `json:"network_metrics"`

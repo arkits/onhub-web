@@ -12,7 +12,7 @@ import (
 func KickOffNetworkMetricsPolling(c *gin.Context) {
 
 	domain.BeginPollingNetworkMetrics()
-	c.JSON(200, models.HttpResponse{
+	c.JSON(200, models.HTTPResponse{
 		Message: "Started polling for Network Metrics",
 	})
 

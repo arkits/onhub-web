@@ -73,6 +73,7 @@ func pollForNetworkMetrics() {
 func GetStoredNetworkMetrics(limit int, skip int) ([]models.ChartNetworkMetrics, error) {
 
 	var storedNetworkMetrics []models.StoredNetworkMetric
+
 	db.Db.Order("created_at desc").Limit(limit).Find(&storedNetworkMetrics)
 
 	var toReturn []models.ChartNetworkMetrics
@@ -81,13 +82,29 @@ func GetStoredNetworkMetrics(limit int, skip int) ([]models.ChartNetworkMetrics,
 
 		var chartNetworkMetrics models.ChartNetworkMetrics
 
-		networkMetric, err := db.GenerateNetworkMetricsFromSNM(storedNetworkMetric)
+		// Convert NetworkMetrics from StoredNetworkMetrics
+		networkMetrics, err := db.GenerateNetworkMetricsFromSNM(storedNetworkMetric)
 		if err != nil {
 			return toReturn, err
 		}
 
+		// Assign the timestamp
 		chartNetworkMetrics.Timestamp = storedNetworkMetric.CreatedAt
-		chartNetworkMetrics.NetworkMetrics = networkMetric
+
+		// Filter out un-needed StationMetrics
+		var filteredStationMetrics []models.StationMetric
+		for _, stationMetric := range networkMetrics.StationMetrics {
+
+			// We only care about Connected Stations
+			if stationMetric.Station.Connected {
+				filteredStationMetrics = append(filteredStationMetrics, stationMetric)
+			}
+
+		}
+
+		// Assing the networkMetrics
+		networkMetrics.StationMetrics = filteredStationMetrics
+		chartNetworkMetrics.NetworkMetrics = networkMetrics
 
 		toReturn = append(toReturn, chartNetworkMetrics)
 	}
