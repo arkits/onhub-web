@@ -9,7 +9,7 @@ auth:
 system_id: ""
 
 network_metrics:
-  poll_rate_seconds: 1
+  poll_rate_ms: 1000
 
 db:
   name: "ohw"

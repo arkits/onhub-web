@@ -53,19 +53,35 @@ func pollForNetworkMetrics() {
 
 		timeStart := time.Now()
 
-		networkMetrics := GetNetworkMetrics()
+		go collectAndPersistNetworkMetrics(timeStart)
 
-		metricsDataKey := fmt.Sprintf("%v", timeStart.Unix())
-
-		err := db.PersistNetworkMetrics(networkMetrics, metricsDataKey)
-		if err != nil {
-			logger.Errorf("Failed to persist networkMetrics - %v", err)
-		}
-
-		go exportNetworkMetricsToPrometheus(networkMetrics, timeStart)
-
-		time.Sleep(viper.GetDuration("network_metrics.poll_rate") * time.Millisecond)
+		time.Sleep(viper.GetDuration("network_metrics.poll_rate_ms") * time.Millisecond)
 	}
+
+}
+
+func collectAndPersistNetworkMetrics(timeStart time.Time) {
+
+	// Collect Network Metrics from API
+	networkMetrics, err := GetNetworkMetrics()
+
+	// Log the error and fast-fail
+	if err != nil {
+		logger.Errorf("Caught Error in GetNetworkMetrics  - %v", err)
+		return
+	}
+
+	// Generate a key for storage
+	metricsDataKey := fmt.Sprintf("%v", timeStart.Unix())
+
+	// Persist to DB
+	err = db.PersistNetworkMetrics(networkMetrics, metricsDataKey)
+	if err != nil {
+		logger.Errorf("Failed to persist networkMetrics - %v", err)
+	}
+
+	// Export to Prometheus
+	go exportNetworkMetricsToPrometheus(networkMetrics, timeStart)
 
 }
 
@@ -127,7 +143,10 @@ func GenerateNetworkMetricsStatus() models.NetworkMetricsStatus {
 }
 
 // GetNetworkMetrics returns all devices that are, or used to be connected to the network.
-func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
+func GetNetworkMetrics() (models.GetRealTimeMetricsResponse, error) {
+
+	// to return
+	var getRealTimeMetricsResponse models.GetRealTimeMetricsResponse
 
 	token := oauth.GetToken()
 
@@ -138,6 +157,7 @@ func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
 	request, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		logger.Errorf("Caught Error in network_metrics.GetNetworkMetrics - err=%s ", err)
+		return getRealTimeMetricsResponse, err
 	}
 	request.Header.Add("Content-Type", "application/json; charset=utf-8")
 	request.Header.Add("Authorization", "Bearer "+token)
@@ -145,14 +165,14 @@ func GetNetworkMetrics() models.GetRealTimeMetricsResponse {
 	response, err := httpClient.Do(request)
 	if err != nil {
 		logger.Errorf("Caught Error in network_metrics.GetNetworkMetrics - err=%s ", err)
+		return getRealTimeMetricsResponse, err
 	}
 
 	defer response.Body.Close()
 
-	var getRealTimeMetricsResponse models.GetRealTimeMetricsResponse
 	json.NewDecoder(response.Body).Decode(&getRealTimeMetricsResponse)
 
-	return getRealTimeMetricsResponse
+	return getRealTimeMetricsResponse, nil
 }
 
 func exportNetworkMetricsToPrometheus(networkMetrics models.GetRealTimeMetricsResponse, timeStart time.Time) {
