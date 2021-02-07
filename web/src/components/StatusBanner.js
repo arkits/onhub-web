@@ -7,10 +7,13 @@ import { formatBytes } from "../utils/utils";
 const StatusBanner = observer(({}) => {
   const appStore = useContext(AppStoreContext);
 
-  const getNumberOfConnectedDevice = (devices) => {
+  const getNumberOfConnectedDevice = (networkMetrics) => {
     let numberOfConnectedDevices = 0;
-    devices.forEach((device) => {
-      if (device?.ipAddresses !== null) {
+
+    let stations = networkMetrics[0]?.network_metrics?.stationMetrics;
+
+    stations.forEach((station) => {
+      if (station?.station.ipAddresses !== null) {
         numberOfConnectedDevices++;
       }
     });
@@ -34,7 +37,8 @@ const StatusBanner = observer(({}) => {
           style={{ fontWeight: 700 }}
         >
           {prettyDownload} download <br />
-          {prettyUpload} upload<br />
+          {prettyUpload} upload
+          <br />
         </Typography>
       );
     } else {
@@ -45,7 +49,8 @@ const StatusBanner = observer(({}) => {
   return (
     <div>
       <Typography variant="h3" style={{ fontWeight: 700 }}>
-        {getNumberOfConnectedDevice(appStore?.devices)} devices connected{" "}
+        {getNumberOfConnectedDevice(appStore?.networkMetrics?.data)} devices
+        connected{" "}
       </Typography>
       {renderNetworkMetric(appStore?.networkMetrics?.data)}
     </div>
