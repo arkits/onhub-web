@@ -28,7 +28,10 @@ func init() {
 	domain.SetupLogger()
 
 	// Setup the DB
-	db.InitDatabase()
+	err := db.InitDatabase()
+	if err != nil {
+		logger.Panicf("Failed InitDatabase - %v", err)
+	}
 
 	// Set Gin's Release Mode
 	SetGinReleaseMode()

@@ -12,6 +12,7 @@ network_metrics:
   poll_rate_ms: 1000
 
 db:
+  type: "sqlite"
   name: "ohw"
   username: "postgres"
   password: "password"

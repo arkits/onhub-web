@@ -13,6 +13,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/karrick/godirwalk v1.16.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/rogpeppe/go-internal v1.7.0 // indirect
 	github.com/sirupsen/logrus v1.7.0 // indirect
@@ -28,5 +29,6 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.0.6
-	gorm.io/gorm v1.20.11
+	gorm.io/driver/sqlite v1.1.4
+	gorm.io/gorm v1.20.12
 )

@@ -10,6 +10,7 @@ import (
 	"github.com/op/go-logging"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 )
@@ -20,7 +21,7 @@ var logger = logging.MustGetLogger("domain")
 var Db *gorm.DB
 
 // InitDatabase initializes the database
-func InitDatabase() {
+func InitDatabase() error {
 
 	logger.Debug("Setting up the DB...")
 
@@ -31,28 +32,48 @@ func InitDatabase() {
 		},
 	)
 
-	// For sqlite DB
-	// db, err := gorm.Open(sqlite.Open("ohw-data.db"), &gorm.Config{
-	// 	Logger: ormLogger,
-	// })
+	switch dbType := viper.GetString("db.type"); dbType {
+	case "postgres":
 
-	dbHost := viper.GetString("db.host")
-	dbUsername := viper.GetString("db.username")
-	dbPassword := viper.GetString("db.password")
-	dbName := viper.GetString("db.name")
-	dbPort := viper.GetString("db.port")
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUsername, dbPassword, dbName, dbPort)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: ormLogger,
-	})
+		dbHost := viper.GetString("db.host")
+		dbUsername := viper.GetString("db.username")
+		dbPassword := viper.GetString("db.password")
+		dbName := viper.GetString("db.name")
+		dbPort := viper.GetString("db.port")
 
-	if err != nil {
-		logger.Errorf("Failed to Setup DB - %v", err)
+		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", dbHost, dbUsername, dbPassword, dbName, dbPort)
+
+		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+			Logger: ormLogger,
+		})
+
+		if err != nil {
+			logger.Errorf("Failed to Setup Postgres DB - %v", err)
+			return err
+		}
+
+		Db = db
+
+	case "sqlite":
+
+		db, err := gorm.Open(sqlite.Open("ohw-data.db"), &gorm.Config{
+			Logger: ormLogger,
+		})
+
+		if err != nil {
+			logger.Errorf("Failed to Setup Sqlite DB - %v", err)
+			return err
+		}
+
+		Db = db
+
+	default:
+		return fmt.Errorf("Invalid db.type - %v", dbType)
 	}
 
-	Db = db
-
 	Db.AutoMigrate(&models.StoredNetworkMetric{})
+
+	return nil
 
 }
 
