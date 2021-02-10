@@ -30,7 +30,7 @@ func init() {
 	// Setup the DB
 	err := db.InitDatabase()
 	if err != nil {
-		logger.Panicf("Failed InitDatabase - %v", err)
+		logger.Fatalf("Failed InitDatabase - %v", err)
 	}
 
 	// Set Gin's Release Mode
@@ -86,6 +86,7 @@ func SetupConfig() {
 
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("/opt/software/onhub-web")
 
 	if err := viper.ReadInConfig(); err != nil {
 		logger.Fatalf("Error reading config file! - %s", err)
