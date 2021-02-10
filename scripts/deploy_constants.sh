@@ -1,8 +1,8 @@
 
 set -e
 
-export USERNAME="pi"
-export HOSTNAME="192.168.86.113"
-export WORK_DIR="/home/pi/software/onhub-web"
+export USERNAME="ubuntu"
+export HOSTNAME="raspberrypi.local"
+export WORK_DIR="/home/ubuntu/software/onhub-web"
 export BIN_NAME="onhub-web"
 
